@@ -8,7 +8,7 @@ custom:
   logForwarding:
     destinationARN: {"Fn::ImportValue": "${env:SUMOLOGIC_LAMBDA_ARN_EXPORT_NAME}"}
 
-service: MV-${REALM}-opsgenie-centreon
+service: MV-${env:REALM}-opsgenie-centreon
 
 provider:
   name: aws
