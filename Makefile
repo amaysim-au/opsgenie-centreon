@@ -37,7 +37,7 @@ test: *.py .env
 	docker-compose run --rm pep8 --ignore E501 *.py
 
 assumeRole: .env
-	docker run --rm -e "AWS_ACCOUNT_ID" -e "AWS_ROLE" amaysim/aws:1.1.1 assume-role.sh >> .env
+	docker run --rm -e "AWS_ACCOUNT_ID" -e "AWS_ROLE" amaysim/aws:1.1.3 assume-role.sh >> .env
 .PHONY: build deploy smoketest remove shell test assumeRole
 
 ##########
