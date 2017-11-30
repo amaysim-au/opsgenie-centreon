@@ -1,12 +1,32 @@
 plugins:
   - serverless-python-requirements
   - serverless-log-forwarding
+  - serverless-plugin-aws-alerts
 
 custom:
   pythonRequirements:
     dockerizePip: false
   logForwarding:
     destinationARN: {"Fn::ImportValue": "${env:SUMOLOGIC_LAMBDA_ARN_EXPORT_NAME}"}
+  alerts:
+    dashboards: true
+    topics:
+      ok: ${env:OPS_GENIE_SNS_ARN}
+      alarm: ${env:OPS_GENIE_SNS_ARN}
+      insufficientData: ${env:OPS_GENIE_SNS_ARN}
+    definitions:
+      functionErrors:
+        threshold: 5
+        period: 3600
+      functionDuration:
+        threshold: 10000
+        statistic: 'p95'
+        period: 900
+    alarms:
+      - functionErrors
+      - functionThrottles
+      - functionInvocations
+      - functionDuration
 
 service: MV-${env:REALM}-opsgenie-centreon
 
@@ -17,6 +37,9 @@ provider:
   memorySize: 128
   timeout: 10
   region: ${env:AWS_REGION}
+  versionFunctions: false
+  deploymentBucket:
+    name: amaysim-serverless-deployments-${env:AWS_ACCOUNT_ID}-${env:AWS_REGION}
   variableSyntax: "\\${(?!AWS::)(env:[ :a-zA-Z0-9._,\\-\\/\\(\\)]+?)}"
   stackTags:
     FRAMEWORK: serverless
